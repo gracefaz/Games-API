@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe("GET /api/categories", () => {
-  test("200: respond with a json object containing an array of categories objects", () => {
+  test("200: responds with array of category objects on a key of categories", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
@@ -35,18 +35,8 @@ describe("GET /api/categories", () => {
       .get("/api/categorys")
       .expect(404)
       .then((res) => {
-        expect(res.body.message).toBe("Not Found");
+        const { message } = res.body;
+        expect(message).toBe("Route Not Found");
       });
   });
 });
-
-// describe.only("Error Handling: GET Requests", () => {
-//   test("404: responds with a Not Found message when passed in a wrong endpoint", () => {
-//     return request(app)
-//       .get("/api/categorys")
-//       .expect(404)
-//       .then((res) => {
-//         expect(res.body.message).toBe("Not Found");
-//       });
-//   });
-// });
