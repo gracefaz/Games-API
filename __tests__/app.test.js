@@ -164,7 +164,6 @@ describe.only("GET /api/users", () => {
       .get("/api/usiers")
       .expect(404)
       .then(({ body }) => {
-        //const { message } = res.body;
         expect(body.message).toBe("Route Not Found");
       });
   });
