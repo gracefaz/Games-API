@@ -41,7 +41,7 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("200: responds with a single matching review", () => {
     const REVIEW_ID = 2;
     return request(app)
@@ -62,15 +62,6 @@ describe.only("GET /api/reviews/:review_id", () => {
         });
       });
   });
-  test("404: responds with does not exist message when the review_id doesn't exist", () => {
-    return request(app)
-      .get("/api/reviews/99999")
-      .expect(404)
-      .then((response) => {
-        const { message } = response.body;
-        expect(message).toBe("The review_id does not exist.");
-      });
-  });
   test("400: responds with a bad request message when the review_id is given as an invalid data type", () => {
     return request(app)
       .get("/api/reviews/grace")
@@ -78,6 +69,15 @@ describe.only("GET /api/reviews/:review_id", () => {
       .then((response) => {
         const { message } = response.body;
         expect(message).toBe("Bad request: Invalid data type.");
+      });
+  });
+  test("404: responds with does not exist message when the review_id doesn't exist", () => {
+    return request(app)
+      .get("/api/reviews/99999")
+      .expect(404)
+      .then((response) => {
+        const { message } = response.body;
+        expect(message).toBe("The review_id does not exist.");
       });
   });
 });

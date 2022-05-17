@@ -1,15 +1,21 @@
 const express = require("express");
 const app = express();
-const {
-  getCategories,
-  getReviewById,
-} = require("./controllers/categories.controllers");
+const { getCategories } = require("./controllers/categories.controllers");
+const { getReviewById } = require("./controllers/reviews.controllers");
 
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
 
 app.get("/api/reviews/:review_id", getReviewById);
+
+app.use((err, req, res, next) => {
+  if (err.code == "22P02") {
+    res.status(400).send({ message: "Bad request: Invalid data type." });
+  } else {
+    next(err);
+  }
+});
 
 app.use((err, req, res, next) => {
   if (err) {
@@ -19,15 +25,7 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.use((err, req, res, next) => {
-  if (err) {
-    res.status(400).send({ message: "Bad request: Invalid data type." });
-  } else {
-    next(err);
-  }
-});
-
-app.use("/*", (req, res, next) => {
+app.all("/*", (req, res, next) => {
   res.status(404).send({ message: "Route Not Found" });
 });
 
