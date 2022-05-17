@@ -139,3 +139,33 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe.only("GET /api/users", () => {
+  test("200: responds with an array user of objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        const { users } = res.body;
+        expect(res.body).toBeInstanceOf(Object);
+        expect(users).toBeInstanceOf(Array);
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+  test("404: responds with a Not Found message when passed in an invalid endpoint", () => {
+    return request(app)
+      .get("/api/usiers")
+      .expect(404)
+      .then(({ body }) => {
+        //const { message } = res.body;
+        expect(body.message).toBe("Route Not Found");
+      });
+  });
+});
