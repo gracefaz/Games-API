@@ -32,14 +32,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-// app.use((err, req, res, next) => {
-//   if (err.code) {
-//     res.status(400).send({ message: "Bad request: Missing contents." });
-//   } else {
-//     next(err);
-//   }
-// });
-
 app.all("/*", (req, res, next) => {
   res.status(404).send({ message: "Route Not Found" });
 });
