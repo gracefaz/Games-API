@@ -89,7 +89,6 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send({ inc_votes: 5 })
       .expect(201)
       .then(({ body }) => {
-        console.log(body, "<--- body");
         expect(body.review).toEqual({
           review_id: 3,
           title: "Ultimate Werewolf",
@@ -102,6 +101,16 @@ describe("PATCH /api/reviews/:review_id", () => {
           created_at: "2021-01-18T10:01:41.251Z",
           votes: 10,
         });
+      });
+  });
+  test("404: responds with does not exist message when the review_id doesn't exist", () => {
+    return request(app)
+      .patch(`/api/reviews/99999`)
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then((response) => {
+        const { message } = response.body;
+        expect(message).toBe("The review_id does not exist.");
       });
   });
 });
