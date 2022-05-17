@@ -140,7 +140,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("GET /api/users", () => {
+describe("GET /api/users", () => {
   test("200: responds with an array user of objects", () => {
     return request(app)
       .get("/api/users")
@@ -164,7 +164,6 @@ describe.only("GET /api/users", () => {
       .get("/api/usiers")
       .expect(404)
       .then(({ body }) => {
-        //const { message } = res.body;
         expect(body.message).toBe("Route Not Found");
       });
   });
