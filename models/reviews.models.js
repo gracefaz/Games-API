@@ -15,6 +15,13 @@ exports.fetchReviewById = (review_id) => {
     });
 };
 
+// exports.insertCommentCount = (review_id) => {
+//   return db.query(
+//     `UPDATE reviews SET comment_count=$1 WHERE review_id=$2 RETURNING *`,
+//     [review_id]
+//   );
+// };
+
 exports.updateVotes = (reviewId, incVotes) => {
   return db
     .query(`UPDATE reviews SET votes=votes+$1 WHERE review_id=$2 RETURNING *`, [

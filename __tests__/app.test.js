@@ -41,9 +41,8 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id", () => {
+describe.only("GET /api/reviews/:review_id", () => {
   test("200: responds with a single matching review", () => {
-    //const REVIEW_ID = 2;
     return request(app)
       .get(`/api/reviews/2`)
       .expect(200)
@@ -62,6 +61,26 @@ describe("GET /api/reviews/:review_id", () => {
         });
       });
   });
+  test("200: responds with a single matching review with comment_count key, depending on queried review_id", () => {
+    return request(app)
+      .get(`/api/reviews/2`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          review_id: 2,
+          title: "Jenga",
+          review_body: "Fiddly fun for all the family",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          category: "dexterity",
+          created_at: "2021-01-18T10:01:41.251Z",
+          votes: 5,
+          comment_count: 3,
+        });
+      });
+  });
   test("400: responds with a bad request message when the review_id is given as an invalid data type", () => {
     return request(app)
       .get("/api/reviews/grace")
@@ -75,7 +94,6 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/99999")
       .expect(404)
       .then(({ body }) => {
-        //const { message } = response.body;
         expect(body.message).toBe("The review_id does not exist.");
       });
   });
