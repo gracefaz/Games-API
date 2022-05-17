@@ -67,7 +67,6 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/grace")
       .expect(400)
       .then(({ body }) => {
-        //const { message } = response.body;
         expect(body.message).toBe("Bad request: Invalid data type.");
       });
   });
@@ -75,9 +74,9 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/99999")
       .expect(404)
-      .then((response) => {
-        const { message } = response.body;
-        expect(message).toBe("The review_id does not exist.");
+      .then(({ body }) => {
+        //const { message } = response.body;
+        expect(body.message).toBe("The review_id does not exist.");
       });
   });
 });
@@ -108,9 +107,26 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch(`/api/reviews/99999`)
       .send({ inc_votes: 5 })
       .expect(404)
-      .then((response) => {
-        const { message } = response.body;
-        expect(message).toBe("The review_id does not exist.");
+      .then(({ body }) => {
+        expect(body.message).toBe("The review_id does not exist.");
+      });
+  });
+  test("400: responds with a bad request message when the review_id is given as an invalid data type", () => {
+    return request(app)
+      .patch("/api/reviews/grace")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
+      });
+  });
+  test("400: responds with a bad request message when the inc_votes is given as an invalid data type", () => {
+    return request(app)
+      .patch("/api/reviews/3")
+      .send({ inc_votes: "five" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
       });
   });
 });
