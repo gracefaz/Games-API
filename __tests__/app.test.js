@@ -129,4 +129,13 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.message).toBe("Bad request: Invalid data type.");
       });
   });
+  test("400: responds with a bad request message when the user sends a body that doesn't contain an inc_votes key", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Missing contents.");
+      });
+  });
 });
