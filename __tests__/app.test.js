@@ -159,4 +159,13 @@ describe.only("GET /api/users", () => {
         });
       });
   });
+  test("404: responds with a Not Found message when passed in an invalid endpoint", () => {
+    return request(app)
+      .get("/api/usiers")
+      .expect(404)
+      .then(({ body }) => {
+        //const { message } = res.body;
+        expect(body.message).toBe("Route Not Found");
+      });
+  });
 });
