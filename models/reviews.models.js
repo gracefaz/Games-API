@@ -47,3 +47,10 @@ exports.fetchReviews = () => {
     return result.rows;
   });
 };
+
+exports.fetchCommentsById = (review_id) => {
+  let queryStr = `SELECT * FROM comments WHERE review_id=$1`;
+  return db.query(queryStr, [review_id]).then((result) => {
+    return result.rows;
+  });
+};

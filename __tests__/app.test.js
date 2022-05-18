@@ -13,6 +13,17 @@ beforeEach(() => {
   return seed(testData);
 });
 
+describe("ERROR - Invalid Path", () => {
+  test("404 - responds with a not found message when given invalid path", () => {
+    return request(app)
+      .get("/api/revs")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Route Not Found");
+      });
+  });
+});
+
 describe("GET /api/categories", () => {
   test("200: responds with array of category objects on a key of categories", () => {
     return request(app)
@@ -200,13 +211,26 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("ERROR - Invalid Path", () => {
-  test("404 - responds with a not found message when given invalid path", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("200: responds with an array of comment objects", () => {
     return request(app)
-      .get("/api/revs")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Route Not Found");
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+        expect(res.body).toBeInstanceOf(Object);
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBe(3);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 2,
+          });
+        });
       });
   });
 });
