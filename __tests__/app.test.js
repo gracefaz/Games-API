@@ -211,7 +211,7 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id/comments", () => {
+describe.only("GET /api/reviews/:review_id/comments", () => {
   test("200: responds with an array of comment objects", () => {
     return request(app)
       .get("/api/reviews/2/comments")
@@ -233,4 +233,20 @@ describe("GET /api/reviews/:review_id/comments", () => {
         });
       });
   });
+  test("200: responds with an empty array when passed a found review_id, but no comments exist for that review_id", () => {
+    return request(app)
+      .get(`/api/reviews/1/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  // test("404: responds with does not exist message when the review_id doesn't exist", () => {
+  //   return request(app)
+  //     .get("/api/reviews/99999/comments")
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       expect(body.message).toBe("The review_id does not exist.");
+  //     });
+  // });
 });

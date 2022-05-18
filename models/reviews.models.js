@@ -1,3 +1,4 @@
+const res = require("express/lib/response");
 const db = require("../db/connection");
 
 exports.fetchReviewById = (review_id) => {
@@ -51,6 +52,7 @@ exports.fetchReviews = () => {
 exports.fetchCommentsById = (review_id) => {
   let queryStr = `SELECT * FROM comments WHERE review_id=$1`;
   return db.query(queryStr, [review_id]).then((result) => {
+    console.log(result.rows);
     return result.rows;
   });
 };
