@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data");
 const db = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
+require("jest-sorted");
 
 afterAll(() => {
   db.end();
@@ -30,18 +31,9 @@ describe("GET /api/categories", () => {
         });
       });
   });
-  test("404: responds with a Not Found message when passed in a wrong endpoint", () => {
-    return request(app)
-      .get("/api/categorys")
-      .expect(404)
-      .then((res) => {
-        const { message } = res.body;
-        expect(message).toBe("Route Not Found");
-      });
-  });
 });
 
-describe.only("GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("200: responds with a single matching review with comment_count key", () => {
     return request(app)
       .get(`/api/reviews/2`)
@@ -179,9 +171,39 @@ describe("GET /api/users", () => {
         });
       });
   });
-  test("404: responds with a Not Found message when passed in an invalid endpoint", () => {
+});
+
+describe("GET /api/reviews", () => {
+  test("200: responds with an array of review objects", () => {
     return request(app)
-      .get("/api/usiers")
+      .get("/api/reviews")
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        expect(res.body).toBeInstanceOf(Object);
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews.length).toBe(13);
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+        reviews.forEach((review) => {
+          expect(review).toMatchObject({
+            owner: expect.any(String),
+            title: expect.any(String),
+            review_id: expect.any(Number),
+            category: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+});
+
+describe("ERROR - Invalid Path", () => {
+  test("404 - responds with a not found message when given invalid path", () => {
+    return request(app)
+      .get("/api/revs")
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Route Not Found");

@@ -4,6 +4,7 @@ const { getCategories } = require("./controllers/categories.controllers");
 const {
   getReviewById,
   patchReviewById,
+  getReviews,
 } = require("./controllers/reviews.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 
@@ -15,7 +16,13 @@ app.get("/api/reviews/:review_id", getReviewById);
 
 app.get("/api/users", getUsers);
 
+app.get("/api/reviews", getReviews);
+
 app.patch("/api/reviews/:review_id", patchReviewById);
+
+app.all("/*", (req, res, next) => {
+  res.status(404).send({ message: "Route Not Found" });
+});
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
@@ -33,10 +40,6 @@ app.use((err, req, res, next) => {
   } else {
     next(err);
   }
-});
-
-app.all("/*", (req, res, next) => {
-  res.status(404).send({ message: "Route Not Found" });
 });
 
 app.use((err, req, res, next) => {

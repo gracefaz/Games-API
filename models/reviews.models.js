@@ -35,3 +35,15 @@ exports.updateVotes = (reviewId, incVotes) => {
       }
     });
 };
+
+exports.fetchReviews = () => {
+  let queryStr = `SELECT reviews.*, 
+  COUNT(comments.comment_id) ::INT 
+  AS comment_count FROM reviews 
+  LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id
+  ORDER BY created_at DESC`;
+
+  return db.query(queryStr).then((result) => {
+    return result.rows;
+  });
+};
