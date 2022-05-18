@@ -31,15 +31,6 @@ describe("GET /api/categories", () => {
         });
       });
   });
-  test("404: responds with a Not Found message when passed in a wrong endpoint", () => {
-    return request(app)
-      .get("/api/categorys")
-      .expect(404)
-      .then((res) => {
-        const { message } = res.body;
-        expect(message).toBe("Route Not Found");
-      });
-  });
 });
 
 describe("GET /api/reviews/:review_id", () => {
@@ -180,14 +171,6 @@ describe("GET /api/users", () => {
         });
       });
   });
-  test("404: responds with a Not Found message when passed in an invalid endpoint", () => {
-    return request(app)
-      .get("/api/usiers")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Route Not Found");
-      });
-  });
 });
 
 describe("GET /api/reviews", () => {
@@ -215,7 +198,10 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  test("404: responds with a not found message when given invalid path", () => {
+});
+
+describe("ERROR - Invalid Path", () => {
+  test("404 - responds with a not found message when given invalid path", () => {
     return request(app)
       .get("/api/revs")
       .expect(404)
