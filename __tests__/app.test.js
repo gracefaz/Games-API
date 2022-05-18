@@ -211,7 +211,7 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("200: responds with an array of comment objects", () => {
     return request(app)
       .get("/api/reviews/2/comments")
@@ -241,12 +241,20 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
         expect(body.comments).toEqual([]);
       });
   });
-  // test("404: responds with does not exist message when the review_id doesn't exist", () => {
-  //   return request(app)
-  //     .get("/api/reviews/99999/comments")
-  //     .expect(404)
-  //     .then(({ body }) => {
-  //       expect(body.message).toBe("The review_id does not exist.");
-  //     });
-  // });
+  test("400: responds with a bad request message when the review_id is given as an invalid data type", () => {
+    return request(app)
+      .get("/api/reviews/grace/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
+      });
+  });
+  test("404: responds with does not exist message when the review_id doesn't exist in the database", () => {
+    return request(app)
+      .get("/api/reviews/99999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("The review_id does not exist.");
+      });
+  });
 });
