@@ -41,7 +41,7 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("200: responds with a single matching review with comment_count key", () => {
     return request(app)
       .get(`/api/reviews/2`)
@@ -185,6 +185,32 @@ describe("GET /api/users", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Route Not Found");
+      });
+  });
+});
+
+describe("GET /api/reviews", () => {
+  test("200: responds with an array of review objects", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        expect(res.body).toBeInstanceOf(Object);
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews.length).toBe(13);
+        reviews.forEach((review) => {
+          expect(review).toMatchObject({
+            owner: expect.any(String),
+            title: expect.any(String),
+            review_id: expect.any(Number),
+            category: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
       });
   });
 });
