@@ -42,7 +42,7 @@ describe("GET /api/categories", () => {
 });
 
 describe.only("GET /api/reviews/:review_id", () => {
-  test("200: responds with a single matching review", () => {
+  test("200: responds with a single matching review with comment_count key", () => {
     return request(app)
       .get(`/api/reviews/2`)
       .expect(200)
@@ -58,26 +58,28 @@ describe.only("GET /api/reviews/:review_id", () => {
           category: "dexterity",
           created_at: "2021-01-18T10:01:41.251Z",
           votes: 5,
+          comment_count: "3",
         });
       });
   });
-  test("200: responds with a single matching review with comment_count key, depending on queried review_id", () => {
+  test("200: responds with a single matching review with comment_count key of zero when no comments exist for review_id", () => {
     return request(app)
-      .get(`/api/reviews/2`)
+      .get(`/api/reviews/4`)
       .expect(200)
       .then(({ body }) => {
         expect(body.review).toEqual({
-          review_id: 2,
-          title: "Jenga",
-          review_body: "Fiddly fun for all the family",
-          designer: "Leslie Scott",
-          owner: "philippaclaire9",
+          review_id: 4,
+          title: "Dolor reprehenderit",
+          review_body:
+            "Consequat velit occaecat voluptate do. Dolor pariatur fugiat sint et proident ex do consequat est. Nisi minim laboris mollit cupidatat et adipisicing laborum do. Sint sit tempor officia pariatur duis ullamco labore ipsum nisi voluptate nulla eu veniam. Et do ad id dolore id cillum non non culpa. Cillum mollit dolor dolore excepteur aliquip. Cillum aliquip quis aute enim anim ex laborum officia. Aliqua magna elit reprehenderit Lorem elit non laboris irure qui aliquip ad proident. Qui enim mollit Lorem labore eiusmod",
+          designer: "Gamey McGameface",
+          owner: "mallionaire",
           review_img_url:
-            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-          category: "dexterity",
-          created_at: "2021-01-18T10:01:41.251Z",
-          votes: 5,
-          comment_count: 3,
+            "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          category: "social deduction",
+          created_at: "2021-01-22T11:35:50.936Z",
+          votes: 7,
+          comment_count: "0",
         });
       });
   });

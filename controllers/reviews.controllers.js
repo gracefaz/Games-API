@@ -1,12 +1,7 @@
-const {
-  fetchReviewById,
-  updateVotes,
-  insertCommentCount,
-} = require("../models/reviews.models");
+const { fetchReviewById, updateVotes } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
   const { review_id } = req.params;
-  console.log(req.query);
   fetchReviewById(review_id)
     .then((review) => {
       res.status(200).send({ review });
@@ -14,13 +9,6 @@ exports.getReviewById = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
-  // insertCommentCount(review_id)
-  //   .then((review) => {
-  //     res.status(200).send({ review });
-  //   })
-  //   .catch((err) => {
-  //     next(err);
-  //   });
 };
 
 exports.patchReviewById = (req, res, next) => {
