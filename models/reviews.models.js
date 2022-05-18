@@ -36,19 +36,13 @@ exports.updateVotes = (reviewId, incVotes) => {
     });
 };
 
-// ALMOST WORKS BUT JUST MISSING THE comment_count KEY.
-// exports.fetchReviews = () => {
-//   return db.query(`SELECT * FROM reviews`).then((reviews) => {
-//     console.log(reviews.rows, "<--- reviews.rows");
-//     return reviews.rows;
-//   });
-// };
-
-exports.fetchReviews = (sortBy = "date", order = "DESC") => {
+exports.fetchReviews = () => {
   let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, 
   COUNT(comments.comment_id) ::INT 
   AS comment_count FROM reviews 
-  LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id`;
+  LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id
+  ORDER BY created_at DESC`;
+
   return db.query(queryStr).then((result) => {
     return result.rows;
   });

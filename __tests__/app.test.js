@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data");
 const db = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
+require("jest-sorted");
 
 afterAll(() => {
   db.end();
@@ -199,6 +200,7 @@ describe("GET /api/reviews", () => {
         expect(res.body).toBeInstanceOf(Object);
         expect(reviews).toBeInstanceOf(Array);
         expect(reviews.length).toBe(13);
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
         reviews.forEach((review) => {
           expect(review).toMatchObject({
             owner: expect.any(String),
@@ -211,6 +213,14 @@ describe("GET /api/reviews", () => {
             comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  test("404: responds with a not found message when given invalid path", () => {
+    return request(app)
+      .get("/api/revs")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Route Not Found");
       });
   });
 });
