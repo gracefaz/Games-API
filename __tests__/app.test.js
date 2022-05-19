@@ -185,7 +185,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/reviews", () => {
-  test("200: responds with an array of review objects", () => {
+  test("200: responds with an array of review objects (default)", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
@@ -216,13 +216,24 @@ describe("GET /api/reviews", () => {
         expect(message).toBe("Bad request: Input is not valid.");
       });
   });
-  test("400: responds with bad request when passed an invalid sort_by", () => {
+  test("400: responds with bad request when passed an invalid order", () => {
     return request(app)
       .get("/api/reviews?order=something")
       .expect(400)
       .then((res) => {
         const { message } = res.body;
         expect(message).toBe("Bad request: Input is not valid.");
+      });
+  });
+  test("200: responds with array of review objects filtered by category", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toHaveLength(11);
+        body.reviews.forEach(({ category }) => {
+          expect(category).toBe("social deduction");
+        });
       });
   });
 });

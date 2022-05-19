@@ -37,10 +37,12 @@ exports.updateVotes = (reviewId, incVotes) => {
 };
 
 exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
+  console.log(category);
+  order = order.toUpperCase();
   let queryStr = `SELECT reviews.*, 
   COUNT(comments.comment_id) ::INT 
   AS comment_count FROM reviews 
-  LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id`;
+  LEFT JOIN comments ON reviews.review_id = comments.review_id `;
 
   const sortByList = [
     "owner",
@@ -51,18 +53,21 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     "created_at",
     "votes",
   ];
-
   const orderList = ["ASC", "DESC"];
-  console.log(order);
+
   if (!sortByList.includes(sort_by) || !orderList.includes(order)) {
     return Promise.reject({
       status: 400,
       message: "Bad request: Input is not valid.",
     });
   }
-  queryStr += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
 
-  return db.query(queryStr).then((result) => {
+  // THINK THIS IS THE ISSUE.
+  if (category) {
+    queryStr += ` WHERE category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+  }
+
+  return db.query(queryStr, [category]).then((result) => {
     return result.rows;
   });
 };
