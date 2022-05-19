@@ -285,4 +285,13 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(body.message).toBe("Bad request: Missing contents.");
       });
   });
+  test("404: responds with not found when review_id does not exist", () => {
+    return request(app)
+      .post(`/api/reviews/99999/comments`)
+      .send({ username: "mallionaire", body: "Farmyard fun!" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("The review_id does not exist.");
+      });
+  });
 });
