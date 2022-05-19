@@ -285,6 +285,15 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(body.message).toBe("Bad request: Missing contents.");
       });
   });
+  test("400: responds with bad request when review_id given as invalid data type", () => {
+    return request(app)
+      .post("/api/reviews/grace/comments")
+      .send({ username: "mallionaire", body: "Farmyard fun!" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
+      });
+  });
   test("404: responds with not found when review_id does not exist", () => {
     return request(app)
       .post(`/api/reviews/99999/comments`)
@@ -292,6 +301,15 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("The review_id does not exist.");
+      });
+  });
+  test("404: responds with not found when a user not in the database tries to post", () => {
+    return request(app)
+      .post(`/api/reviews/1/comments`)
+      .send({ username: "grace", body: "some body" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("The username does not exist.");
       });
   });
 });

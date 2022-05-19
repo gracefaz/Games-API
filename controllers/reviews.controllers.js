@@ -52,10 +52,11 @@ exports.getCommentsById = (req, res, next) => {
 
 exports.addComment = (req, res, next) => {
   const { review_id } = req.params;
-  console.log(req.body, "<--- req.body");
-  insertComment(req.body, review_id)
+  fetchReviewById(review_id)
+    .then(() => {
+      return insertComment(req.body, review_id);
+    })
     .then((comment) => {
-      console.log(comment, "<--- comment");
       res.status(201).send({ comment });
     })
     .catch((err) => {
