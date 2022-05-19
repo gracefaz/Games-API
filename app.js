@@ -6,6 +6,7 @@ const {
   patchReviewById,
   getReviews,
   getCommentsById,
+  addComment,
 } = require("./controllers/reviews.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 
@@ -21,6 +22,8 @@ app.get("/api/reviews", getReviews);
 
 app.get("/api/reviews/:review_id/comments", getCommentsById);
 
+app.post("/api/reviews/:review_id/comments", addComment);
+
 app.patch("/api/reviews/:review_id", patchReviewById);
 
 app.all("/*", (req, res, next) => {
@@ -28,6 +31,7 @@ app.all("/*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   if (err.code === "22P02") {
     res.status(400).send({ message: "Bad request: Invalid data type." });
   } else if (err.code === "23502") {

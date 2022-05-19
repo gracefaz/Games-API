@@ -13,7 +13,7 @@ beforeEach(() => {
   return seed(testData);
 });
 
-describe("ERROR - Invalid Path", () => {
+describe("ERROR - Invalid Endpoint", () => {
   test("404 - responds with a not found message when given invalid path", () => {
     return request(app)
       .get("/api/revs")
@@ -255,6 +255,25 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("The review_id does not exist.");
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  test.only("201: responds with added comment", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send({ username: "mallionaire", body: "Farmyard fun!" })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 7,
+          body: "Farmyard fun!",
+          votes: 0,
+          author: "mallionaire",
+          review_id: 1,
+          created_at: expect.any(String),
+        });
       });
   });
 });

@@ -1,5 +1,3 @@
-const res = require("express/lib/response");
-const { getReviewById } = require("../controllers/reviews.controllers");
 const db = require("../db/connection");
 
 exports.fetchReviewById = (review_id) => {
@@ -67,5 +65,20 @@ exports.fetchCommentsById = (review_id) => {
       } else {
         return [];
       }
+    });
+};
+
+exports.insertComment = (newComment, review_id) => {
+  const { username, body } = newComment;
+  console.log(newComment, "<--- newComment");
+  return db
+    .query(
+      `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`,
+      [username, body, review_id]
+    )
+    .then((res) => {
+      // Why isn't this console logging
+      console.log(res.rows[0], "<--- rows[0]");
+      return res.rows[0];
     });
 };
