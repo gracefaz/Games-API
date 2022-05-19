@@ -13,6 +13,17 @@ beforeEach(() => {
   return seed(testData);
 });
 
+describe("ERROR - Invalid Path", () => {
+  test("404 - responds with a not found message when given invalid path", () => {
+    return request(app)
+      .get("/api/revs")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Route Not Found");
+      });
+  });
+});
+
 describe("GET /api/categories", () => {
   test("200: responds with array of category objects on a key of categories", () => {
     return request(app)
@@ -200,13 +211,50 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("ERROR - Invalid Path", () => {
-  test("404 - responds with a not found message when given invalid path", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("200: responds with an array of comment objects", () => {
     return request(app)
-      .get("/api/revs")
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+        expect(res.body).toBeInstanceOf(Object);
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBe(3);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 2,
+          });
+        });
+      });
+  });
+  test("200: responds with an empty array when passed a found review_id, but no comments exist for that review_id", () => {
+    return request(app)
+      .get(`/api/reviews/1/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  test("400: responds with a bad request message when the review_id is given as an invalid data type", () => {
+    return request(app)
+      .get("/api/reviews/grace/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
+      });
+  });
+  test("404: responds with does not exist message when the review_id doesn't exist in the database", () => {
+    return request(app)
+      .get("/api/reviews/99999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Route Not Found");
+        expect(body.message).toBe("The review_id does not exist.");
       });
   });
 });
