@@ -260,7 +260,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
 });
 
 describe("POST /api/reviews/:review_id/comments", () => {
-  test.only("201: responds with added comment", () => {
+  test("201: responds with added comment", () => {
     return request(app)
       .post("/api/reviews/1/comments")
       .send({ username: "mallionaire", body: "Farmyard fun!" })
@@ -274,6 +274,15 @@ describe("POST /api/reviews/:review_id/comments", () => {
           review_id: 1,
           created_at: expect.any(String),
         });
+      });
+  });
+  test("400: responds with bad request when body does not contain both mandatory keys", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Missing contents.");
       });
   });
 });
