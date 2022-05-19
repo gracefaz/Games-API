@@ -195,18 +195,34 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeInstanceOf(Array);
         expect(reviews.length).toBe(13);
         expect(reviews).toBeSortedBy("created_at", { descending: true });
-        reviews.forEach((review) => {
-          expect(review).toMatchObject({
-            owner: expect.any(String),
-            title: expect.any(String),
-            review_id: expect.any(Number),
-            category: expect.any(String),
-            review_img_url: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            comment_count: expect.any(Number),
-          });
-        });
+      });
+  });
+  test("200: responds with array of review objects sorted in descending order by votes", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes")
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        expect(reviews).toBeSortedBy("votes", { descending: true });
+        expect(reviews.length).toBe(13);
+      });
+  });
+  test("400: responds with bad request when passed an invalid sort_by", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=something")
+      .expect(400)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe("Bad request: Input is not valid.");
+      });
+  });
+  test("400: responds with bad request when passed an invalid sort_by", () => {
+    return request(app)
+      .get("/api/reviews?order=something")
+      .expect(400)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe("Bad request: Input is not valid.");
       });
   });
 });
