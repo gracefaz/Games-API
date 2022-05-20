@@ -37,10 +37,7 @@ app.use((err, req, res, next) => {
     res.status(400).send({ message: "Bad request: Missing contents." });
   } else if (err.code === "23503") {
     res.status(404).send({ message: "The username does not exist." });
-  } //else if (err.code === "something") {
-  //res.status(404).send({ message: "Not found: Category does not exist" });
-  //}
-  else {
+  } else {
     next(err);
   }
 });

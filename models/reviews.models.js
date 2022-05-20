@@ -85,23 +85,16 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     });
   }
 
-  if (category) {
-    queryStr += ` WHERE category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
-    return db.query(queryStr, [category]).then((result) => {
-      return result.rows;
-    });
-  } else {
-    queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
-    return db.query(queryStr).then((result) => {
-      if (!result.rows) {
-        return Promise.reject({
-          status: 404,
-          message: "Not found: Category does not exist",
-        });
-      }
-      return result.rows;
-    });
-  }
+  queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+  return db.query(queryStr).then((result) => {
+    if (!result.rows) {
+      return Promise.reject({
+        status: 404,
+        message: "Not found: Category does not exist",
+      });
+    }
+    return result.rows;
+  });
 };
 
 exports.fetchCommentsById = (review_id) => {
