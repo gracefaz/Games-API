@@ -213,7 +213,7 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then((res) => {
         const { message } = res.body;
-        expect(message).toBe("Bad request: Input is not valid.");
+        expect(message).toBe("Bad request: Invalid input.");
       });
   });
   test("400: responds with bad request when passed an invalid order", () => {
@@ -222,7 +222,7 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then((res) => {
         const { message } = res.body;
-        expect(message).toBe("Bad request: Input is not valid.");
+        expect(message).toBe("Bad request: Invalid input.");
       });
   });
   test("200: responds with array of review objects filtered by category", () => {
@@ -234,6 +234,23 @@ describe("GET /api/reviews", () => {
         body.reviews.forEach(({ category }) => {
           expect(category).toBe("social deduction");
         });
+      });
+  });
+  // This one breaks because the error message isn't working.
+  test("404: responds with not found when user passes a non existing category", () => {
+    return request(app)
+      .get("/api/reviews?category=something")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not found: Category does not exist");
+      });
+  });
+  test("400: responds with bad request when user passes a category of the wrong data type", () => {
+    return request(app)
+      .get("/api/reviews?category=999999")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid input.");
       });
   });
 });

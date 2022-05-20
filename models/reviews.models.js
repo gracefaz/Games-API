@@ -37,12 +37,8 @@ exports.updateVotes = (reviewId, incVotes) => {
 };
 
 exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
-  console.log(category);
+  console.log(category, "<--- category");
   order = order.toUpperCase();
-  let queryStr = `SELECT reviews.*, 
-  COUNT(comments.comment_id) ::INT 
-  AS comment_count FROM reviews 
-  LEFT JOIN comments ON reviews.review_id = comments.review_id `;
 
   const sortByList = [
     "owner",
@@ -55,19 +51,40 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
   ];
   const orderList = ["ASC", "DESC"];
 
-  if (!sortByList.includes(sort_by) || !orderList.includes(order)) {
+  let queryStr = `SELECT reviews.*, 
+  COUNT(comments.comment_id) ::INT 
+  AS comment_count FROM reviews 
+  LEFT JOIN comments ON reviews.review_id = comments.review_id `;
+
+  if (
+    !sortByList.includes(sort_by) ||
+    !orderList.includes(order) ||
+    !isNaN(category)
+  ) {
     return Promise.reject({
       status: 400,
-      message: "Bad request: Input is not valid.",
+      message: "Bad request: Invalid input.",
     });
   }
 
-  // THINK THIS IS THE ISSUE.
   if (category) {
     queryStr += ` WHERE category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+  } else {
+    queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+    return db.query(queryStr).then((result) => {
+      console.log(result.rows, "<--- result.rows");
+      if (!result.rows) {
+        return Promise.reject({
+          status: 404,
+          message: "Not found: Category does not exist",
+        });
+      }
+      return result.rows;
+    });
   }
 
   return db.query(queryStr, [category]).then((result) => {
+    console.log(result.rows, "<--- result.rows");
     return result.rows;
   });
 };
