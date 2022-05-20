@@ -364,3 +364,25 @@ describe("POST /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: responds with updated array of objects, the correct object having been deleted", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  test("404: responds with not found when the comment_id doesn't exist", () => {
+    return request(app)
+      .delete("/api/comments/999999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not found: The comment_id does not exist");
+      });
+  });
+  test("400: responds with bad request when the comment_id is an invalid data type", () => {
+    return request(app)
+      .delete("/api/comments/grace")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid data type.");
+      });
+  });
+});

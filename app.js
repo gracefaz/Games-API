@@ -7,6 +7,7 @@ const {
   getReviews,
   getCommentsById,
   addComment,
+  removeComment,
 } = require("./controllers/reviews.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 
@@ -26,11 +27,14 @@ app.post("/api/reviews/:review_id/comments", addComment);
 
 app.patch("/api/reviews/:review_id", patchReviewById);
 
+app.delete("/api/comments/:comment_id", removeComment);
+
 app.all("/*", (req, res, next) => {
   res.status(404).send({ message: "Route Not Found" });
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   if (err.code === "22P02") {
     res.status(400).send({ message: "Bad request: Invalid data type." });
   } else if (err.code === "23502") {

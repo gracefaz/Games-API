@@ -128,3 +128,13 @@ exports.insertComment = (newComment, review_id) => {
       return res.rows[0];
     });
 };
+
+exports.deleteComment = (removedComment) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1`, [removedComment])
+    .then((comment) => {
+      console.log(comment.rows, "<--- comment.rows");
+      // Returning an empty array?
+      return comment.rows;
+    });
+};
