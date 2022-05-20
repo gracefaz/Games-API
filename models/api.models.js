@@ -1,10 +1,10 @@
 const db = require("../db/connection");
-const fs = require("fs");
+const fs = require("fs/promises");
 
 exports.fetchDescription = () => {
-  return fs.readFile("../endpoints.json", "utf-8").then((endpoints) => {
+  return fs.readFile("./endpoints.json", "utf-8").then((endpoints) => {
     const parsedEndpoints = JSON.parse(endpoints);
     console.log(parsedEndpoints);
-    return endpoints;
+    return parsedEndpoints;
   });
 };
