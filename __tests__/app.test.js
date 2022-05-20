@@ -185,7 +185,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/reviews", () => {
-  test("200: responds with an array of review objects", () => {
+  test("200: responds with an array of review objects (default)", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
@@ -195,18 +195,69 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeInstanceOf(Array);
         expect(reviews.length).toBe(13);
         expect(reviews).toBeSortedBy("created_at", { descending: true });
-        reviews.forEach((review) => {
-          expect(review).toMatchObject({
-            owner: expect.any(String),
-            title: expect.any(String),
-            review_id: expect.any(Number),
-            category: expect.any(String),
-            review_img_url: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            comment_count: expect.any(Number),
-          });
+      });
+  });
+  test("200: responds with array of review objects sorted in descending order by votes", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes")
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        expect(reviews).toBeSortedBy("votes", { descending: true });
+        expect(reviews.length).toBe(13);
+      });
+  });
+  test("400: responds with bad request when passed an invalid sort_by", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=something")
+      .expect(400)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe("Bad request: Invalid input.");
+      });
+  });
+  test("400: responds with bad request when passed an invalid order", () => {
+    return request(app)
+      .get("/api/reviews?order=something")
+      .expect(400)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe("Bad request: Invalid input.");
+      });
+  });
+  test("200: responds with array of review objects filtered by category", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toHaveLength(11);
+        body.reviews.forEach(({ category }) => {
+          expect(category).toBe("social deduction");
         });
+      });
+  });
+  test("404: responds with not found when user passes a non existing category", () => {
+    return request(app)
+      .get("/api/reviews?category=something")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not found: Category does not exist");
+      });
+  });
+  test("400: responds with bad request when user passes a category of the wrong data type", () => {
+    return request(app)
+      .get("/api/reviews?category=999999")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request: Invalid input.");
+      });
+  });
+  test("200: responds with an empty array when category exists but has no reviews", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toEqual([]);
       });
   });
 });

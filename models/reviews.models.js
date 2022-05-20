@@ -36,14 +36,63 @@ exports.updateVotes = (reviewId, incVotes) => {
     });
 };
 
-exports.fetchReviews = () => {
+exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
+  order = order.toUpperCase();
+
+  const sortByList = [
+    "owner",
+    "title",
+    "review_id",
+    "category",
+    "review_img_url",
+    "created_at",
+    "votes",
+  ];
+  const orderList = ["ASC", "DESC"];
+  const validCategoryList = [];
+
   let queryStr = `SELECT reviews.*, 
   COUNT(comments.comment_id) ::INT 
   AS comment_count FROM reviews 
-  LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id
-  ORDER BY created_at DESC`;
+  LEFT JOIN comments ON reviews.review_id = comments.review_id `;
 
+  if (
+    !sortByList.includes(sort_by) ||
+    !orderList.includes(order) ||
+    !isNaN(category)
+  ) {
+    return Promise.reject({
+      status: 400,
+      message: "Bad request: Invalid input.",
+    });
+  }
+
+  if (category) {
+    let checkCategoryStr = `SELECT * FROM categories WHERE slug = $1`;
+    return db.query(checkCategoryStr, [category]).then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({
+          status: 404,
+          message: "Not found: Category does not exist",
+        });
+      } else {
+        queryStr += ` WHERE reviews.category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+        validCategoryList.push(category);
+        return db.query(queryStr, [category]).then((result) => {
+          return result.rows;
+        });
+      }
+    });
+  }
+
+  queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
   return db.query(queryStr).then((result) => {
+    if (!result.rows) {
+      return Promise.reject({
+        status: 404,
+        message: "Not found: Category does not exist",
+      });
+    }
     return result.rows;
   });
 };
