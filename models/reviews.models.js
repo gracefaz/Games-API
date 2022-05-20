@@ -37,7 +37,6 @@ exports.updateVotes = (reviewId, incVotes) => {
 };
 
 exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
-  console.log(category, "<--- category");
   order = order.toUpperCase();
 
   const sortByList = [
@@ -50,6 +49,7 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     "votes",
   ];
   const orderList = ["ASC", "DESC"];
+  const validCategoryList = [];
 
   let queryStr = `SELECT reviews.*, 
   COUNT(comments.comment_id) ::INT 
@@ -68,9 +68,26 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
   }
 
   if (category) {
+    let checkCategoryStr = `SELECT * FROM categories WHERE slug = $1`;
+    return db.query(checkCategoryStr, [category]).then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({
+          status: 404,
+          message: "Not found: Category does not exist",
+        });
+      } else {
+        queryStr += ` WHERE reviews.category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+        validCategoryList.push(category);
+        return db.query(queryStr, [category]).then((result) => {
+          return result.rows;
+        });
+      }
+    });
+  }
+
+  if (category) {
     queryStr += ` WHERE category = $1 GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
     return db.query(queryStr, [category]).then((result) => {
-      console.log(result.rows, "<--- result.rows");
       return result.rows;
     });
   } else {

@@ -236,7 +236,7 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  // This one breaks because the error message isn't working.
+  // This one breaks because the error message isn't working. Need to check the category actually exists.
   test("404: responds with not found when user passes a non existing category", () => {
     return request(app)
       .get("/api/reviews?category=something")

@@ -31,20 +31,21 @@ app.all("/*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  //console.log(err);
   if (err.code === "22P02") {
     res.status(400).send({ message: "Bad request: Invalid data type." });
   } else if (err.code === "23502") {
     res.status(400).send({ message: "Bad request: Missing contents." });
   } else if (err.code === "23503") {
     res.status(404).send({ message: "The username does not exist." });
-  } else {
+  } //else if (err.code === "something") {
+  //res.status(404).send({ message: "Not found: Category does not exist" });
+  //}
+  else {
     next(err);
   }
 });
 
 app.use((err, req, res, next) => {
-  //console.log(err);
   if (err.status) {
     res.status(err.status).send({ message: err.message });
   } else {
