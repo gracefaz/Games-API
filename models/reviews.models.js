@@ -128,3 +128,23 @@ exports.insertComment = (newComment, review_id) => {
       return res.rows[0];
     });
 };
+
+exports.deleteComment = (removedComment) => {
+  if (removedComment) {
+    let checkCommentsStr = `SELECT * FROM comments WHERE comment_id = $1`;
+    return db.query(checkCommentsStr, [removedComment]).then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({
+          status: 404,
+          message: "Not found: The comment_id does not exist",
+        });
+      } else {
+        return db
+          .query(`DELETE FROM comments WHERE comment_id = $1`, [removedComment])
+          .then((comment) => {
+            return comment.rows;
+          });
+      }
+    });
+  }
+};
