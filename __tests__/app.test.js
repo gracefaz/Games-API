@@ -386,3 +386,18 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api", () => {
+  test("200: responds with a json object describing all the available endpoints on the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(res.body).toBeInstanceOf(Object);
+        expect(Object.keys(res.body.description).length).toBe(9);
+        expect(res.body.description["GET /api"].description).toBe(
+          "serves up a json representation of all the available endpoints of the api"
+        );
+      });
+  });
+});
