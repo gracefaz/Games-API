@@ -47,6 +47,7 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     "review_img_url",
     "created_at",
     "votes",
+    "comment_count",
   ];
   const orderList = ["ASC", "DESC"];
   const validCategoryList = [];
